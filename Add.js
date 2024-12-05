@@ -31,7 +31,7 @@ const Add = ({navigation}) => {
                         onPress={() => {
                             let item = {key:desc, amount: amount };
                             let indexnum = 1;
-                            if (type == "Income") {
+                            if (type === "Income") {
                                 indexnum = 0;
                             }
                             datasource[indexnum].data.push(item);

@@ -44,16 +44,19 @@ const styles = StyleSheet.create({
         borderColor: '#333f6e'
     },
     tableBorder: {
-        margin: 20,
+        marginLeft: 20,
+        marginRight: 20,
         marginTop: 5,
         borderWidth: 4,
         borderRadius: 10,
-        borderColor: '#333f6e'
+        borderColor: '#333f6e',
+        maxHeight: 440
     }
 });
 
 const Home = ({navigation}) => {
-    const [goal, setGoal] = useState(0);
+    const [goal, setGoal] = useState(null);
+    const [data, setData] = useState(datasource);
     const renderItem = ({item, index, section}) => {
         return (
             <TouchableOpacity style={styles.itemBorder}
@@ -68,20 +71,22 @@ const Home = ({navigation}) => {
         );
     };
     return (
-        <View style={{backgroundColor: '#8bdfd7', paddingBottom: 50}}>
+        <View style={{backgroundColor: '#8bdfd7', paddingBottom: 500}}>
             <Text style={styles.title}>Income/Expenses Tracker</Text>
                 <View>
                     <TextInput style={{borderWidth: 2, padding: 10, margin: 10, backgroundColor: '#fffbe8', borderColor: '#333f6e'}}
                                placeholder="Enter your goal"
-                               onChangeText={(value) => setGoal(parseFloat(value) || 0)}/>
-                    <Text style={{textAlign: 'center', fontWeight: 'bold', margin: 10}}>I will save ${goal.toFixed(2)} by the end of the week.</Text>
+                               onChangeText={(value) => setGoal( value? parseFloat(value) : null)}/>
+                    <Text style={{textAlign: 'center', fontWeight: 'bold', margin: 10}}>
+                        {goal === null ? "Set your goals for the end of the month above." : `I will save $${goal.toFixed(2)} by the end of the month.`}
+                    </Text>
                 </View>
                 <View style={{width: 360, height: 60, alignSelf: 'center', marginTop: 10}}>
                     <Button title="Add Income/Expense" color="#333f6e" onPress={() => {navigation.navigate('Add')}}/>
                 </View>
                 <View style={styles.tableBorder}>
                         <StatusBar hidden={true}/>
-                        <SectionList sections={datasource} renderItem={renderItem}
+                        <SectionList sections={data} renderItem={renderItem}
                                      renderSectionHeader={({section:{type, bgColor, icon}})=>(
                                          <View style={[styles.headerBorder, {backgroundColor: bgColor}]}>
                                              <Icon name={icon} size={25} style={{marginRight: 5}}/>
@@ -93,8 +98,13 @@ const Home = ({navigation}) => {
                     <Button title="Your Report" color="#333f6e" onPress={() => {
                         const totalIncome = datasource[0].data.reduce((sum, item) => sum + parseFloat(item.amount || 0), 0);
                         const totalExpenses = datasource[1].data.reduce((sum, item) => sum + parseFloat(item.amount || 0), 0);
-                        const deficitAmt = (totalIncome - totalExpenses).toFixed(2);
-                        if (goal === deficitAmt) {
+                        const deficitAmt = parseFloat((totalIncome - totalExpenses).toFixed(2));
+                        if (goal === null) {
+                            Alert.alert("Your Report:",
+                                `Total Income: $${totalIncome.toFixed(2)}\n` +
+                                `Total Expenses: $${totalExpenses.toFixed(2)}\n` +
+                                `Deficit Amount: $${deficitAmt}`);
+                        } else if (goal === deficitAmt) {
                             Alert.alert("Your Report:",
                                 `Total Income: $${totalIncome.toFixed(2)}\n` +
                             `Total Expenses: $${totalExpenses.toFixed(2)}\n` +
@@ -116,15 +126,24 @@ const Home = ({navigation}) => {
                     }}/>
                 </View>
                 <View style={{width: 360, height: 60, alignSelf: 'center'}}>
-                    <Button title="Start A New Week" color="#333f6e"
+                    <Button title="Start A New Month" color="#333f6e"
                             onPress={() => {
-                                Alert.alert("Warning: This will delete all income and expenses.", '',
-                                    [{text: 'OK', onPress: () => {
-                                            datasource[0].data = [];
-                                            datasource[1].data = [];
-                                            navigation.navigate("Home")
-                                        }},
-                                        {text: 'Cancel'}])
+                                Alert.alert(
+                                    "Are you sure?",
+                                    "This will delete all income and expenses.",
+                                    [
+                                        {
+                                            text: 'OK',
+                                            onPress: () => {
+                                                setData([
+                                                    { type: "Income", data: [], bgColor: '#ace695', icon: 'money-bills' },
+                                                    { type: "Expenses", data: [], bgColor: '#f78181', icon: 'money-bill-transfer' }
+                                                ]);
+                                            }
+                                        },
+                                        { text: 'Cancel' }
+                                    ]
+                                );
                             }}/>
                 </View>
         </View>

@@ -4,9 +4,9 @@ const datasource = [
         ],
         type: "Income", bgColor: '#ace695', icon: 'money-bills'},
     {data:[
-            {key: 'Games', amount: 20.7},
-            {key: 'Lunch', amount: 10.5},
-            {key: 'Movie', amount: 17.3}
+            {key: 'Games', amount: 20.78},
+            {key: 'Lunch', amount: 10.32},
+            {key: 'Movie', amount: 17}
         ],
         type: "Expense", bgColor: '#f78181', icon: 'money-bill-transfer'},
 ];

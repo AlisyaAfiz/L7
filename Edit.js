@@ -31,7 +31,7 @@ const Edit = ({navigation, route}) => {
                     <Button title="Save" color="#333f6e"
                             onPress={() => {
                                 let indexnum = 1;
-                                if (route.params.type == "Grass") {
+                                if (route.params.type === "Income") {
                                     indexnum = 0;
                                 }
                                 datasource[indexnum].data[route.params.index].key=desc;
@@ -45,7 +45,7 @@ const Edit = ({navigation, route}) => {
                     <Button title="Delete" color="#333f6e"
                             onPress={() => {
                                 let indexnum = 1;
-                                if (route.params.type == "Income") {
+                                if (route.params.type === "Income") {
                                     indexnum = 0;
                                 }
                                 Alert.alert("Are you sure?", '',
